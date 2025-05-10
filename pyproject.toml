@@ -1,0 +1,37 @@
+[project]
+name = "hackbyte-dataset"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "fvcore>=0.1.5.post20221221",
+  "ipykernel>=6.29.5",
+  "kagglehub>=0.3.10",
+  "matplotlib>=3.10.0",
+  "numpy>=2.2.2",
+  "opencv-contrib-python>=4.11.0.86",
+  "pandas>=2.2.3",
+  "pyqt6>=6.8.1",
+  "pytorchvideo>=0.1.5",
+  "ruff>=0.9.6",
+  "scikit-image>=0.25.1",
+  "scikit-learn>=1.6.1",
+  "tensorboard>=2.19.0",
+  "torch>=2.6.0",
+  "torchvision>=0.21.0",
+  "ultralytics>=8.3.126",
+]
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu126", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+torchvision = [
+  { index = "pytorch-cu126", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
