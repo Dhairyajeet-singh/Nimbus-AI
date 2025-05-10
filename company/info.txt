@@ -1,0 +1,1 @@
+This folder will have the data of the input companies by the user 
