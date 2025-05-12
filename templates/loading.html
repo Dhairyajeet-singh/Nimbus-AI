@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyzing Marketing Strategy</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border-left-color: #6366f1;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: #6366f1;
+            border-radius: 4px;
+            animation: progress 45s linear forwards;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+        
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+    <script>
+        // Redirect to results page after analysis is complete (approximately 45 seconds)
+        setTimeout(function() {
+            window.location.href = "{{ url_for('result', company_name=company_name) }}";
+        }, 45000);
+    </script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="container mx-auto px-4">
+        <div class="bg-white rounded-lg shadow-md p-8 max-w-2xl mx-auto text-center">
+            <h2 class="text-2xl font-bold text-indigo-600 mb-4">Analyzing {{ company_name }}'s Marketing Strategy</h2>
+            
+            <div class="mb-8 flex justify-center">
+                <div class="spinner"></div>
+            </div>
+            
+            <div class="mb-6">
+                <div class="mb-2 flex justify-between text-sm text-gray-500">
+                    <span>0%</span>
+                    <span>100%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+            </div>
+            
+            <div class="space-y-4 mb-6">
+                <div class="py-2 px-4 bg-gray-50 rounded-md pulse">
+                    <p class="text-gray-600">Researching competitor websites...</p>
+                </div>
+                <div class="py-2 px-4 bg-gray-50 rounded-md pulse" style="animation-delay: 0.5s">
+                    <p class="text-gray-600">Analyzing marketing approaches...</p>
+                </div>
+                <div class="py-2 px-4 bg-gray-50 rounded-md pulse" style="animation-delay: 1s">
+                    <p class="text-gray-600">Generating strategic recommendations...</p>
+                </div>
+            </div>
+            
+            <p class="text-gray-500 text-sm">This process may take up to 45 seconds. Please wait...</p>
+            
+            <div class="mt-6">
+                <a href="{{ url_for('index') }}" class="text-indigo-600 hover:text-indigo-800 transition duration-300">
+                    &larr; Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
