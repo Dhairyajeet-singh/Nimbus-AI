@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIMBUS AI - Advanced Market Analysis</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0d0d0d 0%, #1a0a2e 25%, #16213e 50%, #0f0f23 75%, #000000 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Animated dark background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(123, 31, 162, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(74, 20, 140, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(138, 43, 226, 0.08) 0%, transparent 50%);
+            z-index: 1;
+            animation: backgroundPulse 15s ease-in-out infinite;
+        }
+         @keyframes backgroundPulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 0;
+            background: rgba(13, 13, 13, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+            z-index: 1000;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff 0%, #8a2be2 50%, #9d4edd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(138, 43, 226, 0.5);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(138, 43, 226, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-outline {
+            background: rgba(13, 13, 13, 0.8);
+            color: #ffffff;
+            border: 2px solid rgba(138, 43, 226, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-outline:hover {
+            border-color: #8a2be2;
+            background: rgba(138, 43, 226, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8a2be2 0%, #9d4edd 50%, #7b1fa2 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(138, 43, 226, 0.6);
+        }
+
+        /* hero section (main title on the home page in the cetnre) */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-content {
+            max-width: 650px;
+            margin-top: 80px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.8rem, 6vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #ffffff 0%, #e0aaff 30%, #8a2be2 70%, #7b1fa2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 50px rgba(138, 43, 226, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            color: rgba(255, 255, 255, 0.85);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            padding: 18px 36px;
+            font-size: 1.1rem;
+            border-radius: 15px;
+            font-weight: 700;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 120px 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 80px;
+            background: linear-gradient(135deg, #ffffff 0%, #e0aaff 50%, #8a2be2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(138, 43, 226, 0.4);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(13, 13, 13, 0.9) 0%, rgba(26, 10, 46, 0.6) 50%, rgba(15, 15, 35, 0.8) 100%);
+            padding: 40px;
+            border-radius: 25px;
+            border: 1px solid rgba(138, 43, 226, 0.2);
+            backdrop-filter: blur(20px);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.1) 0%, rgba(123, 31, 162, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            border-color: rgba(138, 43, 226, 0.6);
+            box-shadow: 0 25px 50px rgba(138, 43, 226, 0.3);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #8a2be2 0%, #9d4edd 50%, #7b1fa2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            font-size: 28px;
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.4);
+            position: relative;
+            z-index: 2;
+        }
+
+        .feature-card h3 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #ffffff;
+            position: relative;
+            z-index: 2;
+        }
+
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.7;
+            position: relative;
+            z-index: 2;
+            font-size: 1.05rem;
+        }
+        /* Spline Viewer Styles */
+        spline-viewer {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            transition: filter 0.3s ease;
+        }
+
+        spline-viewer:hover {
+            filter: brightness(1.1);
+        }
+
+        /* Dialogue Box Styles */
+        .dialogue-box {
+            position: absolute;
+            top: 20%;
+            right: 25%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            max-width: 300px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            z-index: 10;
+        }
+
+        .dialogue-box:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .dialogue-text {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .dialogue-subtext {
+            font-size: 14px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Chat Screen Styles */
+        .chat-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .chat-overlay.active {
+            display: flex;
+            opacity: 1;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 800px;
+            height: 80%;
+            max-height: 600px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .chat-overlay.active .chat-container {
+            transform: scale(1);
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+
+        .message.bot .message-bubble {
+            background: #e3f2fd;
+            color: #1976d2;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            outline: none;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .chat-input:focus {
+            border-color: #667eea;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 10px 16px;
+            color: #666;
+            font-style: italic;
+        }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(13, 13, 13, 0.95) 0%, rgba(26, 10, 46, 0.9) 50%, rgba(15, 15, 35, 0.95) 100%);
+            padding: 50px;
+            border-radius: 25px;
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            backdrop-filter: blur(30px);
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #8a2be2 0%, #9d4edd 50%, #e0aaff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 12px;
+            background: rgba(13, 13, 13, 0.8);
+            color: #ffffff;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #8a2be2;
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
+            background: rgba(13, 13, 13, 0.9);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 28px;
+            cursor: pointer;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: #ffffff;
+            background: rgba(138, 43, 226, 0.2);
+        }
+
+                /* Floating elements */
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .floating-shape {
+            position: absolute;
+            background: linear-gradient(45deg, rgba(138, 43, 226, 0.1), rgba(123, 31, 162, 0.1));
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .floating-shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-shape:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            top: 60%;
+            left: 80%;
+            animation-delay: 2s;
+        }
+
+        .floating-shape:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            top: 80%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .nav-buttons {
+                gap: 10px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .modal-content {
+                padding: 30px;
+                margin: 20px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 8px 25px rgba(138, 43, 226, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(138, 43, 226, 0.6); }
+        }
+
+        .pulse {
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        /* Scroll animations */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        /* Purple glowing dots */
+        .glow-dots {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #8a2be2;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #8a2be2, 0 0 20px #8a2be2, 0 0 30px #8a2be2;
+            animation: twinkle 2s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        /* Footer*/
+
+
+        a {
+        transition: .3s;
+        }
+
+        a:hover,
+        a:active,
+        a:focus {
+        outline: none;
+        text-decoration: none;
+        }
+
+        .footer {
+        position: relative;
+        padding-top: 45px;
+        background: 
+                radial-gradient(circle at 20% 20%, rgba(123, 31, 162, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(74, 20, 140, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(138, 43, 226, 0.08) 0%, transparent 50%);
+        }
+
+        .footer .newsletter {
+        position: relative;
+        max-width: 900px;
+        margin: 0 auto 45px auto;
+        padding: 30px 15px;
+        background: 
+                radial-gradient(circle at 20% 20%, rgba(123, 31, 162, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(74, 20, 140, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(138, 43, 226, 0.08) 0%, transparent 50%);
+        text-align: center;
+        }
+
+        .footer .newsletter h2 {
+        color: #dddddd;
+        font-size: 35px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        }
+
+        .footer .newsletter .form {
+        position: relative;
+        max-width: 400px;
+        margin: 0 auto;
+        }
+
+        .footer .newsletter input {
+        height: 50px;
+        border: 2px solid #cdcdcd;
+        border-radius: 0;
+        }
+
+        .footer .newsletter .btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        height: 40px;
+        padding: 8px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        text-transform: uppercase;
+        color: linear-gradient(135deg, #ffffff 0%, #8a2be2 50%, #9d4edd 100%);
+        background: #841ebb;
+        border-radius: 0;
+        border: 2px solid #000000;
+        transition: .3s;
+        }
+
+        .footer .newsletter .btn:hover {
+        color: #ffffff;
+        background: linear-gradient(135deg, #ffffff 0%, #8a2be2 50%, #9d4edd 100%);
+        }
+
+        .footer .newsletter .btn:focus {
+        box-shadow: none;
+        }
+
+        .footer .footer-about,
+        .footer .footer-link,
+        .footer .footer-contact {
+        position: relative;
+        margin-bottom: 45px;
+        color: #dddddd;
+        }
+
+        .footer .footer-about h3,
+        .footer .footer-link h3,
+        .footer .footer-contact h3{
+        position: relative;
+        margin-bottom: 20px;
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        color:  linear-gradient(135deg, #ffffff 0%, #8a2be2 50%, #9d4edd 100%);
+        }
+
+        .footer .footer-link a {
+        display: block;
+        margin-bottom: 10px;
+        color: #dddddd;
+        transition: .3s;
+        text-transform: capitalize;
+        }
+
+        .footer .footer-link a::before {
+        position: relative;
+        content: "\f105";
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        margin-right: 10px;
+        }
+
+        .footer .footer-link a:hover {
+        color:  linear-gradient(135deg, #ffffff 0%, #8a2be2 50%, #9d4edd 100%);
+        letter-spacing: 1px;
+        }
+
+        .footer .footer-contact p i {
+        width: 25px;
+        }
+
+        .footer .footer-social {
+        position: relative;
+        margin-top: 20px;
+        }
+
+        .footer .footer-social a {
+        display: inline-block;
+        }
+
+        .footer .footer-social a i {
+        margin-right: 15px;
+        font-size: 18px;
+        color:  linear-gradient(135deg, #ffffff 0%, #8a2be2 50%, #9d4edd 100%);
+        }
+
+        .footer .footer-social a:last-child i {
+        margin: 0;
+        }
+
+        .footer .footer-social a:hover i {
+        color: #dddddd;
+        }
+
+        .footer .footer-menu .f-menu {
+        position: relative;
+        padding: 10px 0;
+        font-size: 0;
+        text-align: center;
+        border-top: 1px solid rgba(255, 255, 255, .1);
+        border-bottom: 1px solid rgba(255, 255, 255, .1);
+        }
+
+        .footer .footer-menu .f-menu a {
+        color: #dddddd;
+        font-size: 16px;
+        margin-right: 15px;
+        padding-right: 15px;
+        border-right: 1px solid rgba(255, 255, 255, .3);
+        }
+
+        .footer .footer-menu .f-menu a:hover {
+        color:  linear-gradient(135deg, #ffffff 0%, #8a2be2 50%, #9d4edd 100%);
+        }
+
+        .footer .footer-menu .f-menu a:last-child {
+        margin-right: 0;
+        padding-right: 0;
+        border-right: none;
+        }
+
+        .footer .copyright {
+        padding: 30px 15px;
+        }
+
+        .footer .copyright p {
+        margin: 0;
+        color: #dddddd;
+        }
+
+        .footer .copyright .col-md-6:last-child p {
+        text-align: right;
+        }
+
+        .footer .copyright p a {
+        color:  linear-gradient(135deg, #ffffff 0%, #8a2be2 50%, #9d4edd 100%);
+        font-weight: 500;
+        letter-spacing: 1px;
+        }
+
+        .footer .copyright p a:hover {
+        color: #ffffff;
+        }
+
+        @media (max-width: 768px) {
+        .footer .copyright p,
+        .footer .copyright .col-md-6:last-child p {
+            margin: 5px 0;
+            text-align: center;
+        }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+    <nav>
+        <div class="nav-content">
+            <div class="logo">NIMBUS AI</div>
+            <div class="nav-buttons">
+                <button class="btn btn-outline" onclick="openModal('login')">Login</button>
+                <button class="btn btn-outline" onclick="openModal('signup')">Sign Up</button>
+                <button class="btn btn-outline" onclick="openModal('login')">Features</button>
+                <button class="btn btn-primary" onclick="openModal('login')">About Us</button>
+            </div>
+        </div>
+    </nav>
+    <main>
+
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Outsmart Your Competition with AI-Powered Market Analysis</h1>
+                    <p>NIMBUS AI analyzes your competitors' marketing strategies in real-time and provides actionable insights to help you dominate your market. Get ahead with data-driven intelligence that actually works.</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary btn-large pulse" onclick="openModal('signup')">Start Free Analysis</button>
+                        <button class="btn btn-outline btn-large" onclick="scrollToFeatures()">Discover How</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <br><br>
+    
+        <script type="module" src="https://unpkg.com/@splinetool/viewer@1.10.57/build/spline-viewer.js"></script>
+        <spline-viewer url="https://prod.spline.design/khr3Bfk3GAZJwg4n/scene.splinecode"></spline-viewer>
+
+        <section class="features" id="features">
+            <div class="container">
+                <h2 class="section-title">How NIMBUS AI Revolutionizes Market Intelligence</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-tools" viewBox="0 0 16 16">
+                                <path d="M1 0 0 1l2.2 3.081a1 1 0 0 0 .815.419h.07a1 1 0 0 1 .708.293l2.675 2.675-2.617 2.654A3.003 3.003 0 0 0 0 13a3 3 0 1 0 5.878-.851l2.654-2.617.968.968-.305.914a1 1 0 0 0 .242 1.023l3.27 3.27a.997.997 0 0 0 1.414 0l1.586-1.586a.997.997 0 0 0 0-1.414l-3.27-3.27a1 1 0 0 0-1.023-.242L10.5 9.5l-.96-.96 2.68-2.643A3.005 3.005 0 0 0 16 3q0-.405-.102-.777l-2.14 2.141L12 4l-.364-1.757L13.777.102a3 3 0 0 0-3.675 3.68L7.462 6.46 4.793 3.793a1 1 0 0 1-.293-.707v-.071a1 1 0 0 0-.419-.814zm9.646 10.646a.5.5 0 0 1 .708 0l2.914 2.915a.5.5 0 0 1-.707.707l-2.915-2.914a.5.5 0 0 1 0-.708M3 11l.471.242.529.026.287.445.445.287.026.529L5 13l-.242.471-.026.529-.445.287-.287.445-.529.026L3 15l-.471-.242L2 14.732l-.287-.445L1.268 14l-.026-.529L1 13l.242-.471.026-.529.445-.287.287-.445.529-.026z"/>
+                            </svg>
+                        </div>
+                        <h3>Deep Competitor Analysis</h3>
+                        <p>Simply enter your competitor's name and watch our advanced AI dissect their entire marketing ecosystem - from social strategies to pricing models and campaign performance.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-graph-up-arrow" viewBox="0 0 16 16">
+                            `   <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5"/>
+                            </svg>
+                        </div>
+                        <h3>Strategic Intelligence Reports</h3>
+                        <p>Receive comprehensive reports revealing your competitors' strengths, weaknesses, and blind spots with specific recommendations tailored to your business goals.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-rocket-takeoff-fill" viewBox="0 0 16 16">
+                                <path d="M12.17 9.53c2.307-2.592 3.278-4.684 3.641-6.218.21-.887.214-1.58.16-2.065a3.6 3.6 0 0 0-.108-.563 2 2 0 0 0-.078-.23V.453c-.073-.164-.168-.234-.352-.295a2 2 0 0 0-.16-.045 4 4 0 0 0-.57-.093c-.49-.044-1.19-.03-2.08.188-1.536.374-3.618 1.343-6.161 3.604l-2.4.238h-.006a2.55 2.55 0 0 0-1.524.734L.15 7.17a.512.512 0 0 0 .433.868l1.896-.271c.28-.04.592.013.955.132.232.076.437.16.655.248l.203.083c.196.816.66 1.58 1.275 2.195.613.614 1.376 1.08 2.191 1.277l.082.202c.089.218.173.424.249.657.118.363.172.676.132.956l-.271 1.9a.512.512 0 0 0 .867.433l2.382-2.386c.41-.41.668-.949.732-1.526zm.11-3.699c-.797.8-1.93.961-2.528.362-.598-.6-.436-1.733.361-2.532.798-.799 1.93-.96 2.528-.361s.437 1.732-.36 2.531Z"/>
+                                <path d="M5.205 10.787a7.6 7.6 0 0 0 1.804 1.352c-1.118 1.007-4.929 2.028-5.054 1.903-.126-.127.737-4.189 1.839-5.18.346.69.837 1.35 1.411 1.925"/>
+                            </svg>
+                        </div>
+                        <h3>Market Domination Strategies</h3>
+                        <p>Get battlefield-tested tactics to outmaneuver your competition, including content strategies, pricing insights, and untapped market opportunities they're missing.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <!-- Spline 3D Element -->
+                <spline-viewer url="https://prod.spline.design/yEd7crIiSBXlDO-k/scene.splinecode" id="splineViewer"></spline-viewer>
+                
+                <!-- Dialogue Box -->
+                <div class="dialogue-box pulse-animation" id="dialogueBox">
+                    <div class="dialogue-text">Do you have any questions?</div>
+                    <div class="dialogue-subtext">I am here to answer them</div>
+                </div>
+
+                <!-- Chat Overlay -->
+                <div class="chat-overlay" id="chatOverlay">
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <div class="chat-title">AI Assistant</div>
+                            <button class="close-btn" id="closeChat">×</button>
+                        </div>
+                        
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message bot">
+                                <div class="message-bubble">
+                                    Hello! I'm your AI assistant. How can I help you today?
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="typing-indicator" id="typingIndicator">
+                            AI is typing...
+                        </div>
+                        
+                        <div class="chat-input-container">
+                            <input type="text" class="chat-input" id="chatInput" placeholder="Type your message here..." />
+                            <button class="send-btn" id="sendBtn">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <script type="module" src="https://unpkg.com/@splinetool/viewer@1.10.57/build/spline-viewer.js"></script>
+        </section>
+    </main>
+    <!-- Footer Start -->
+    <div class="footer">
+        <div class="container">
+            <div class="newsletter">
+            <h2>Subscribe Our Newsletter</h2>
+            <div class="form">
+                <input class="form-control" placeholder="Email here">
+                <button class="btn">Submit</button>
+            </div>
+            </div>
+            <div class="row">
+            <div class="col-md-6 col-lg-4">
+                <div class="footer-about">
+                <h3>About Us</h3>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eu lectus a leo tristique dictum nec non quam. Suspendisse convallis, tortor eu placerat rhoncus, lorem quam iaculis felis, sed eleifend lacus neque id eros. Integer convallis volutpat neque
+                </p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-8">
+                <div class="row">
+                <div class="col-md-6 col-lg-4">
+                    <div class="footer-link">
+                    <h3>Service Area</h3>
+                    <a href="">About Us</a>
+                    <a href="">Features</a>
+                    <a href="">Contact Us</a>
+                    <a href="">Home</a>
+                    <a href="">Sample video</a>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="footer-link">
+                    <h3>Useful Link</h3>
+                    <a href="">Linkedin</a>
+                    <a href="">instagram</a>
+                    <a href="">Contact Us</a>
+                    <a href="">Home</a>
+                    <a href="">Sample video</a>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="footer-contact">
+                    <h3>Get In Touch</h3>
+                    <p><i class="fa fa-map-marker-alt"></i>91SpringBoard Building Sector 1, Noida</p>
+                    <p><i class="fa fa-phone-alt"></i>+91 9210363835</p>
+                    <p><i class="fa fa-envelope"></i>nimbusai@gmail.com</p>
+                    <div class="footer-social">
+                        <a href=""><i class="fab fa-twitter"></i></a>
+                        <a href=""><i class="fab fa-facebook-f"></i></a>
+                        <a href=""><i class="fab fa-youtube"></i></a>
+                        <a href=""><i class="fab fa-instagram"></i></a>
+                        <a href=""><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container footer-menu">
+        <div class="f-menu">
+        <a href="">Terms of use</a>
+        <a href="">Privacy policy</a>
+        <a href="">Cookies</a>
+        <a href="">Help</a>
+        <a href="">FQAs</a>
+        </div>
+    </div>
+    <div class="container copyright">
+        <div class="row">
+        <div class="col-md-6">
+            <p>&copy; <a href="#">Your Site Name</a>, All Right Reserved.</p>
+        </div>
+        </div>
+    </div>
+    </div>
+    <!-- Footer End -->
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('login')">&times;</button>
+            <h2 class="modal-title">Welcome Back to NIMBUS</h2>
+            <form>
+                <div class="form-group">
+                    <label for="login-email">Email Address</label>
+                    <input type="email" id="login-email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px; padding: 15px;">Access Dashboard</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signup-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('signup')">&times;</button>
+            <h2 class="modal-title">Join the NIMBUS Revolution</h2>
+            <form>
+                <div class="form-group">
+                    <label for="signup-name">Full Name</label>
+                    <input type="text" id="signup-name" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email Address</label>
+                    <input type="email" id="signup-email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-company">Company Name</label>
+                    <input type="text" id="signup-company" placeholder="Enter your company name" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Create Password</label>
+                    <input type="password" id="signup-password" placeholder="Create a strong password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px; padding: 15px;">Start Free Trial</button>
+            </form>
+        </div>
+    </div>
+        <script>
+        // bot at the end, ai helpbot
+        class Chatbot {
+            constructor() {
+                this.messages = [];
+                this.responses = [
+                    "That's a great question! Let me think about that for you.",
+                    "I understand your concern. Here's what I can tell you...",
+                    "Thanks for asking! Based on what you've shared, I'd suggest...",
+                    "That's an interesting point. From my perspective...",
+                    "I'm glad you brought that up. Here's my take on it...",
+                    "Great question! Let me provide you with some helpful information.",
+                    "I see what you're getting at. Here's what I think...",
+                    "That's something many people wonder about. Here's the answer...",
+                    "Thanks for your question! I'm here to help with that.",
+                    "I appreciate you asking. Let me explain that for you..."
+                ];
+                this.init();
+            }
+
+            init() {
+                this.chatOverlay = document.getElementById('chatOverlay');
+                this.chatMessages = document.getElementById('chatMessages');
+                this.chatInput = document.getElementById('chatInput');
+                this.sendBtn = document.getElementById('sendBtn');
+                this.closeBtn = document.getElementById('closeChat');
+                this.dialogueBox = document.getElementById('dialogueBox');
+                this.splineViewer = document.getElementById('splineViewer');
+                this.typingIndicator = document.getElementById('typingIndicator');
+                this.initialChatContent = this.chatMessages.innerHTML;
+
+                this.bindEvents();
+            }
+
+            bindEvents() {
+                // Open chat events
+                this.dialogueBox.addEventListener('click', () => this.openChat());
+                this.splineViewer.addEventListener('click', () => this.openChat());
+                
+                // Close chat event
+                this.closeBtn.addEventListener('click', () => this.closeChat());
+                
+                // Send message events
+                this.sendBtn.addEventListener('click', () => this.sendMessage());
+                this.chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.sendMessage();
+                    }
+                });
+
+                // Close on overlay click
+                this.chatOverlay.addEventListener('click', (e) => {
+                    if (e.target === this.chatOverlay) {
+                        this.closeChat();
+                    }
+                });
+            }
+
+            openChat() {
+                this.chatOverlay.classList.add('active');
+                this.chatInput.focus();
+                document.body.style.overflow = 'hidden';
+            }
+
+            closeChat() {
+                this.chatOverlay.classList.remove('active');
+                document.body.style.overflow = 'auto';
+                
+                //clear chat history
+                this.messages = [];
+                this.chatMessages.innerHTML = this.initialChatContent;
+            }
+
+            async sendMessage() {
+                const message = this.chatInput.value.trim();
+                if (!message) return;
+
+                // Add user message
+                this.addMessage(message, 'user');
+                this.chatInput.value = '';
+                this.sendBtn.disabled = true;
+
+                // Show typing indicator
+                this.showTyping();
+
+                try {
+                    const response = await this.generateResponse(message);
+                    this.hideTyping();
+                    this.addMessage(response, 'bot');
+                } catch (error) {
+                    this.hideTyping();
+                    console.error('Chatbot Error:', error);
+                    this.addMessage("Sorry, I'm having trouble responding right now. Please make sure the API key is configured properly.", 'bot');
+                } finally {
+                    this.sendBtn.disabled = false;
+                }
+            }
+
+            addMessage(text, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+                
+                const bubbleDiv = document.createElement('div');
+                bubbleDiv.className = 'message-bubble';
+                bubbleDiv.textContent = text;
+                
+                messageDiv.appendChild(bubbleDiv);
+                this.chatMessages.appendChild(messageDiv);
+                
+                // Scroll to bottom
+                this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+                
+                // Add message to history
+                this.messages.push({ text, sender, timestamp: new Date() });
+            }
+
+            async generateResponse(userMessage) {
+                // You need to add your OpenAI API key here
+                const apiKey = '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'; // Replace with your actual API key
+                const endpoint = 'https://api.openai.com/v1/chat/completions';
+
+                // Check if API key is provided
+                if (!apiKey || apiKey === 'your-openai-api-key-here') {
+                    // Fallback to predefined responses for demo purposes
+                    return this.getFallbackResponse(userMessage);
+                }
+
+                const companyContext = `
+                You are an assistant for "NIMBUS AI", a company that compares your market opponent's marketing strategies and suggests what better your company could do to get ahead of your competitors in market.
+                NIMBUS AI is a platform that allows business to grow exponentially by direct comparison and analysis of their competitors marketing strategies. Nimbus AI provide insights on social media strategies, pricing models, campaign performance, and more.
+                Your responses should be professional, concise, and focused on providing actionable insights related to market analysis and competitive strategies.
+                Always refer to the company as "NIMBUS AI" and highlight its unique value proposition in your responses.
+                If user asks how to use the platform guide them to login or signup and after that they will be redirected to the home page of the website, where they can see all the features they can access, free quota limits, premium plans, and additional information section.
+                If user asks anything similar to current functionality of main feature, tell them the core concept is to enter your competitor name and leave the rest to NIMBUS AI, it will analyze the competitor's marketing strategies and provide actionable insights to help you stay ahead in the market.
+                In next few updates the platform will not be limited to marketing strategies but will also include social media analysis and comparison, website traffic analysis, customer sentiment analysis, product feature comparison and financial analysis of the entire company.
+                If you don't know the answer, just say "I'm not sure about that, but I can help you find out!", don't make up any answer.
+                `;
+
+                const data = {
+                    model: "gpt-3.5-turbo", // Fixed: was "gpt-3.5"
+                    messages: [
+                        { role: "system", content: companyContext },
+                        { role: "user", content: userMessage }
+                    ],
+                    max_tokens: 250,
+                    temperature: 0.7
+                };
+
+                try {
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    if (!result.choices || !result.choices[0] || !result.choices[0].message) {
+                        throw new Error('Invalid API response format');
+                    }
+
+                    return result.choices[0].message.content.trim();
+                } catch (error) {
+                    console.error('OpenAI API Error:', error);
+                    // Fallback to predefined responses
+                    return this.getFallbackResponse(userMessage);
+                }
+            }
+
+            // Fallback response system when API is not available
+            getFallbackResponse(userMessage) {
+                const message = userMessage.toLowerCase();
+                
+                // NIMBUS AI specific responses
+                if (message.includes('nimbus') || message.includes('company')) {
+                    return "NIMBUS AI is your competitive intelligence platform that analyzes your competitors' marketing strategies and provides actionable insights to help you stay ahead in the market. How can I help you today?";
+                }
+                
+                if (message.includes('competitor') || message.includes('competition')) {
+                    return "NIMBUS AI specializes in competitor analysis! We help you understand your competitors' social media strategies, pricing models, and campaign performance. What specific competitive insights are you looking for?";
+                }
+                
+                if (message.includes('marketing') || message.includes('strategy')) {
+                    return "Great question about marketing strategies! NIMBUS AI provides comprehensive analysis of marketing approaches used by your competitors, helping you identify opportunities and optimize your own campaigns.";
+                }
+                
+                if (message.includes('price') || message.includes('pricing')) {
+                    return "Pricing strategy is crucial for competitive advantage! NIMBUS AI analyzes competitor pricing models and can suggest optimal pricing strategies for your business.";
+                }
+                
+                if (message.includes('social media')) {
+                    return "Social media analysis is one of our key features! NIMBUS AI will soon offer advanced social media comparison tools to help you understand how your competitors engage with their audience.";
+                }
+                
+                // Default responses
+                const randomIndex = Math.floor(Math.random() * this.responses.length);
+                return this.responses[randomIndex] + " (Note: This is a demo response. Please configure your OpenAI API key for full functionality.)";
+            }
+
+            showTyping() {
+                this.typingIndicator.style.display = 'block';
+                this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+            }
+
+            hideTyping() {
+                this.typingIndicator.style.display = 'none';
+            }
+        }
+
+        // Initialize chatbot when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new Chatbot();
+        });
+
+        // Add some interactive animations
+        document.addEventListener('mousemove', (e) => {
+            const dialogueBox = document.getElementById('dialogueBox');
+            const rect = dialogueBox.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            const deltaX = (e.clientX - centerX) / 50;
+            const deltaY = (e.clientY - centerY) / 50;
+            
+            dialogueBox.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1.02)`;
+        });
+
+        document.addEventListener('mouseleave', () => {
+            const dialogueBox = document.getElementById('dialogueBox');
+            dialogueBox.style.transform = '';
+        });
+        // Three.js Scene Setup
+        let scene, camera, renderer, globe, dataPoints, networkLines, particles;
+        let mouseX = 0, mouseY = 0;
+
+        function initThreeJS() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // Create 3D elements
+            createFloatingDataPoints();
+            createNetworkConnections();
+            createParticleSystem();
+            
+            camera.position.z = 8;
+            camera.position.x = 2;
+            
+            // Animation loop
+            animate();
+        }
+
+
+        function createFloatingDataPoints() {
+            dataPoints = new THREE.Group();
+            
+            for(let i = 0; i < 80; i++) {
+                const pointGeometry = new THREE.SphereGeometry(0.03, 8, 8);
+                const colors = [0x8a2be2, 0x9d4edd, 0x7b1fa2, 0xe0aaff];
+                const pointMaterial = new THREE.MeshBasicMaterial({
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    transparent: true,
+                    opacity: 0.8
+                });
+                
+                const point = new THREE.Mesh(pointGeometry, pointMaterial);
+                point.position.set(
+                    (Math.random() - 0.5) * 20,
+                    (Math.random() - 0.5) * 12,
+                    (Math.random() - 0.5) * 15
+                );
+                
+                point.userData = {
+                    originalPosition: point.position.clone(),
+                    speed: Math.random() * 0.02 + 0.005,
+                    floatRange: Math.random() * 1 + 0.5
+                };
+                
+                dataPoints.add(point);
+            }
+            
+            scene.add(dataPoints);
+        }
+
+        function createNetworkConnections() {
+            const lineMaterial = new THREE.LineBasicMaterial({
+                color: 0x8a2be2,
+                transparent: true,
+                opacity: 0.15
+            });
+
+            for(let i = 0; i < 30; i++) {
+                const points = [];
+                points.push(new THREE.Vector3(
+                    (Math.random() - 0.5) * 15,
+                    (Math.random() - 0.5) * 10,
+                    (Math.random() - 0.5) * 10
+                ));
+                points.push(new THREE.Vector3(
+                    (Math.random() - 0.5) * 15,
+                    (Math.random() - 0.5) * 10,
+                    (Math.random() - 0.5) * 10
+                ));
+
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const line = new THREE.Line(geometry, lineMaterial);
+                scene.add(line);
+            }
+        }
+
+        function createParticleSystem() {
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 1000;
+            const posArray = new Float32Array(particlesCount * 3);
+
+            for(let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 25;
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.003,
+                color: 0x9d4edd,
+                transparent: true,
+                opacity: 0.6
+            });
+
+            particles = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particles);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = Date.now() * 0.001;
+
+
+            // Animate data points
+            if(dataPoints) {
+                dataPoints.children.forEach((point, index) => {
+                    point.position.y = point.userData.originalPosition.y + 
+                        Math.sin(time * point.userData.speed + index) * point.userData.floatRange;
+                    point.rotation.y += point.userData.speed;
+                    
+                    // Pulsing opacity
+                    point.material.opacity = 0.4 + Math.sin(time * 2 + index) * 0.4;
+                });
+                dataPoints.rotation.y += 0.002;
+            }
+
+            // Animate particles
+            if(particles) {
+                particles.rotation.y += 0.001;
+                particles.rotation.x += 0.0005;
+            }
+
+            // Mouse interaction
+            if(globe) {
+                globe.position.x = 5 + mouseX * 0.0002;
+                globe.position.y = mouseY * 0.0002;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // Mouse movement tracking
+        document.addEventListener('mousemove', (event) => {
+            mouseX = event.clientX - window.innerWidth / 2;
+            mouseY = event.clientY - window.innerHeight / 2;
+        });
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Modal functions
+        function openModal(type) {
+            document.getElementById(type + '-modal').style.display = 'flex';
+        }
+
+        function closeModal(type) {
+            document.getElementById(type + '-modal').style.display = 'none';
+        }
+
+        function scrollToFeatures() {
+            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+
+        // Form submissions
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('Demo version - Welcome to NIMBUS AI! Your account would be created here.');
+            });
+        });
+
+        // Initialize Three.js when page loads
+        window.addEventListener('load', initThreeJS);
+
+        // Parallax scrolling effect
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.floating-shape');
+            const speed = scrolled * 0.2;
+            
+            parallaxElements.forEach((element, index) => {
+                const rate = speed * (index + 1) * 0.1;
+                element.style.transform = `translateY(${rate}px) rotate(${rate * 0.3}deg)`;
+            });
+
+            // Move 3D elements slightly on scroll
+            if(dataPoints) {
+                dataPoints.position.y = -scrolled * 0.001;
+            }
+        });
+
+        // Add scroll-triggered animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-in');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Add some random glowing dots
+        function createGlowingDots() {
+            for(let i = 0; i < 20; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'glow-dots';
+                dot.style.left = Math.random() * 100 + '%';
+                dot.style.top = Math.random() * 100 + '%';
+                dot.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(dot);
+            }
+        }
+
+        // Initialize glowing dots
+        window.addEventListener('load', createGlowingDots);
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</body>
+</html>
